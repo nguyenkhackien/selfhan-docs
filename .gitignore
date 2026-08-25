@@ -1,0 +1,28 @@
+# BEGIN agent-router-workflow
+/AGENTS.md
+/CLAUDE.md
+/GEMINI.md
+/agent-workflow.json
+/.agent/
+/.cursor/rules/agent-router.mdc
+/scripts/dispatch-opencode-workers.sh
+/scripts/enqueue-opencode-task.sh
+/scripts/opencode-repo-worker.sh
+/scripts/run-opencode-packet.sh
+/scripts/setup-opencode-project.sh
+/scripts/show-opencode-project-status.sh
+/scripts/stop-opencode-project.sh
+/scripts/prepare-opencode-worker-worktree.sh
+/scripts/validate-git-branch.sh
+/scripts/review-opencode-worker.sh
+/scripts/approve-opencode-contract.sh
+/scripts/refresh-opencode-run-state.sh
+/scripts/update-opencode-worker-status.sh
+/scripts/update-opencode-task-status.sh
+/scripts/show-opencode-run-status.sh
+/scripts/iterm2-runtime.sh
+/scripts/iterm2-runtime.applescript
+/examples/opencode-repos.tsv
+/examples/opencode-work-packet/
+/.opencode-runtime/
+# END agent-router-workflow
