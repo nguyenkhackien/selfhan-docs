@@ -26,3 +26,7 @@
 /examples/opencode-work-packet/
 /.opencode-runtime/
 # END agent-router-workflow
+
+# Local agent execution artifacts
+/.history/
+/runs/
