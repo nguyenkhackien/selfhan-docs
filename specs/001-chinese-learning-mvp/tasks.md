@@ -18,57 +18,62 @@
 ## Phase 1: Foundation Contract
 
 - [x] **T001** `[DONE]` Record the approved MVP scope, data model, proposed API,
-  docs-impact precheck, and staged cross-repository plan in this work-item folder.
-  Evidence: `spec.md`, `data-model.md`, `contracts/api-v1.md`, and `plan.md`.
+      docs-impact precheck, and staged cross-repository plan in this work-item folder.
+      Evidence: `spec.md`, `data-model.md`, `contracts/api-v1.md`, and `plan.md`.
 - [x] **T002** `[DONE]` Implement run `001-auth-content-foundation` directly in
-  the `backend` source checkout after the worker runtime proved unreliable.
-  Deliver auth, role enforcement, initial content migration/read endpoints,
-  legal demo seed, and unit coverage. Verification: backend format, lint,
-  typecheck, unit tests, build, and integration-test runner. PostgreSQL
-  migration/seed smoke testing remains part of review because no disposable
-  database is configured. Trace: FR-001 to FR-005, FR-014, NFR-001 to NFR-004.
+      the `backend` source checkout after the worker runtime proved unreliable.
+      Deliver auth, role enforcement, initial content migration/read endpoints,
+      legal demo seed, and unit coverage. Verification: backend format, lint,
+      typecheck, unit tests, build, and integration-test runner. PostgreSQL
+      migration/seed smoke testing remains part of review because no disposable
+      database is configured. Trace: FR-001 to FR-005, FR-014, NFR-001 to NFR-004.
 - [x] **T003** `[DONE]` Review the completed backend foundation diff and use the
-  implemented auth/content foundation contract for direct frontend integration.
-  Trace: FR-001 to FR-005, NFR-002 to NFR-004.
+      implemented auth/content foundation contract for direct frontend integration.
+      Trace: FR-001 to FR-005, NFR-002 to NFR-004.
 
 ## Phase 2: Core Learner Path
 
 - [x] **T004** `[DONE]` Implement run `002-learner-shell` directly in
-  `frontend`. Deliver auth routes, typed API adapter, catalogue, lesson UI,
-  responsive green sidebar navigation, and handwriting canvas. Trace: FR-001,
-  FR-003 to FR-007, NFR-005 to NFR-007.
+      `frontend`. Deliver auth routes, typed API adapter, catalogue, lesson UI,
+      responsive green sidebar navigation, and handwriting canvas. Trace: FR-001,
+      FR-003 to FR-007, NFR-005 to NFR-007.
 - [x] **T005** `[DONE]` Review the learner shell for contract adherence,
-  responsive behavior, and accessibility. Evidence: frontend `npm run verify`
-  passed with coverage and Playwright/axe checks. Trace: FR-001, FR-003 to
-  FR-007, NFR-005 to NFR-007.
+      responsive behavior, and accessibility. Evidence: frontend `npm run verify`
+      passed with coverage and Playwright/axe checks. Trace: FR-001, FR-003 to
+      FR-007, NFR-005 to NFR-007.
 - [ ] **T006** `[TODO]` Dispatch run `003-quiz-progress-api` to `backend` after
-  `auth-content-v1` approval. Deliver quiz scoring, lesson progress, dashboard,
-  flashcard review API, and `learning-state-v1`. Trace: FR-008 to FR-012.
+      `auth-content-v1` approval. Deliver quiz scoring, lesson progress, dashboard,
+      flashcard review API, and `learning-state-v1`. Trace: FR-008 to FR-012.
 - [ ] **T007** `[TODO]` Review run 003 and publish `learning-state-v1`. Trace:
-  FR-008 to FR-012, NFR-002 to NFR-004.
+      FR-008 to FR-012, NFR-002 to NFR-004.
 - [ ] **T008** `[TODO]` Dispatch run `004-learner-practice` to `frontend` after
-  `learning-state-v1` approval. Deliver quiz, flashcard, dashboard, and
-  cross-session learner E2E. Trace: FR-008 to FR-012, NFR-005 to NFR-007.
+      `learning-state-v1` approval. Deliver quiz, flashcard, dashboard, and
+      cross-session learner E2E. Trace: FR-008 to FR-012, NFR-005 to NFR-007.
 
 ## Phase 3: Core Content Operations
 
 - [ ] **T009** `[TODO]` Dispatch, review, and publish runs 005 and 006 for
-  backend admin CRUD then frontend admin UI. Trace: FR-013, NFR-002 to NFR-007.
+      backend admin CRUD then frontend admin UI. Trace: FR-013, NFR-002 to NFR-007.
 
 ## Phase 4: Should-Have Learning Features
 
 - [ ] **T010** `[TODO]` Dispatch, review, and publish runs 007 and 008 for SRS,
-  vocabulary tags, Unit quiz, statistics, and their learner UI. Trace: FR-015
-  to FR-017.
+      vocabulary tags, Unit quiz, statistics, and their learner UI. Trace: FR-015
+      to FR-017.
 
 ## Phase 5: Release Review And Documentation
 
-- [ ] **T011** `[TODO]` Obtain or document the licensed source for HSK 1-3 text
-  and audio before any non-demo content import. Trace: NFR-008.
+- [x] **T011** `[DONE]` Complete run
+      `006-hsk-vocabulary-data-foundation`: record pinned licensed sources for the
+      HSK 3.0 vocabulary snapshot, import bands 1–6 and combined 7–9 into
+      dedicated tables, and preserve CVDICT/CC-CEDICT attribution. No source audio
+      is imported. Evidence: `specs/006-hsk-vocabulary-data-foundation/`,
+      backend data license, source lock, migration, and import verification.
+      Trace: FR-014 and NFR-008.
 - [ ] **T012** `[TODO]` Dispatch and review run 009 release hardening after all
-  Must-have workers are approved. Trace: SC-001 to SC-004 and NFR-001 to NFR-008.
+      Must-have workers are approved. Trace: SC-001 to SC-004 and NFR-001 to NFR-008.
 - [ ] **T013** `[TODO]` Run `DOCS_IMPACT_FINAL_CHECK`, write `review.md` and
-  `converge.md`, and reconcile worker commits before declaring the MVP complete.
+      `converge.md`, and reconcile worker commits before declaring the MVP complete.
 
 ## Persona Lens Notes
 
@@ -78,12 +83,12 @@
 
 ## Traceability
 
-| Task | Requirement | Verification |
-| --- | --- | --- |
-| T002 to T003 | FR-001 to FR-005, FR-014, NFR-001 to NFR-004 | Backend worker tests, migration evidence, reviewer contract approval |
-| T004 to T005 | FR-001, FR-003 to FR-007, NFR-005 to NFR-007 | Frontend verify, axe, responsive E2E, reviewer verdict |
-| T006 to T008 | FR-008 to FR-012 | API tests, learner-practice E2E, approved contract |
-| T009 | FR-013 | Admin role/API/integration/E2E verification |
-| T010 | FR-015 to FR-017 | Deterministic SRS tests and UI E2E |
-| T011 | NFR-008 | Licence/source approval or documented block |
-| T012 to T013 | SC-001 to SC-004, NFR-001 to NFR-008 | Release test evidence, docs/review/convergence artifacts |
+| Task         | Requirement                                  | Verification                                                                 |
+| ------------ | -------------------------------------------- | ---------------------------------------------------------------------------- |
+| T002 to T003 | FR-001 to FR-005, FR-014, NFR-001 to NFR-004 | Backend worker tests, migration evidence, reviewer contract approval         |
+| T004 to T005 | FR-001, FR-003 to FR-007, NFR-005 to NFR-007 | Frontend verify, axe, responsive E2E, reviewer verdict                       |
+| T006 to T008 | FR-008 to FR-012                             | API tests, learner-practice E2E, approved contract                           |
+| T009         | FR-013                                       | Admin role/API/integration/E2E verification                                  |
+| T010         | FR-015 to FR-017                             | Deterministic SRS tests and UI E2E                                           |
+| T011         | FR-014, NFR-008                              | Pinned source lock, attribution, database import, and no source-audio import |
+| T012 to T013 | SC-001 to SC-004, NFR-001 to NFR-008         | Release test evidence, docs/review/convergence artifacts                     |

@@ -147,7 +147,9 @@ badges.
   current streak, and the lesson to continue.
 - **FR-013**: Permit admins to create, update, reorder, publish, and archive
   every content entity in FR-003 through FR-008.
-- **FR-014**: Seed a legal, small demo curriculum for development and E2E tests.
+- **FR-014**: Seed a legal, small demo curriculum for development and E2E
+  tests, and maintain a separately imported, licensed HSK vocabulary snapshot
+  without asserting it is published curriculum content.
 - **FR-015**: Implement four SRS states and the intervals 1, 3, 7, 14, and 30
   days for review outcomes.
 - **FR-016**: Support favorite and difficult tags per learner and vocabulary.
@@ -223,8 +225,9 @@ badges.
   media CDN are deferred until a storage provider is selected.
 - The existing frontend's browser-only data remains a temporary demo adapter
   until the approved backend contracts are integrated.
-- HSK 1-3 content import begins only after the product owner supplies licensed
-  source material or confirms team-authored seed data.
+- The HSK 3.0 snapshot is a separate, traceable data foundation for bands 1–6
+  and combined 7–9. It is not a learner API or a replacement for the
+  administrator-owned curriculum until a later product decision connects it.
 
 ## Implementation Readiness
 
@@ -232,13 +235,13 @@ The specification is implementation-ready for the backend foundation and the
 frontend learner shell. The following decisions are deliberately required before
 their later implementation phases; a worker must not invent them:
 
-| Phase | Decision required | Owner |
-| --- | --- | --- |
-| Quiz and progress | Required lesson sections, exact quiz prompt/option schema for each mode, passing-score exceptions, and retry policy. | Product owner and backend contract reviewer |
-| Dashboard and streak | Learner timezone selection and changes, qualifying activity types, and the empty-state definition for `continueLesson`. | Product owner |
-| Admin content | Create/update DTO fields, bulk-reorder conflict policy, publish validation, and archive effects on learner history. | Product owner and backend contract reviewer |
-| SRS and analytics | Exact four state names, rating-to-interval mapping, lapse behavior, and statistics denominators. | Product owner and backend contract reviewer |
-| HSK 1-3 import | Licensed source, attribution requirements, and approved audio source. | Product owner/legal owner |
+| Phase                | Decision required                                                                                                       | Owner                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Quiz and progress    | Required lesson sections, exact quiz prompt/option schema for each mode, passing-score exceptions, and retry policy.    | Product owner and backend contract reviewer |
+| Dashboard and streak | Learner timezone selection and changes, qualifying activity types, and the empty-state definition for `continueLesson`. | Product owner                               |
+| Admin content        | Create/update DTO fields, bulk-reorder conflict policy, publish validation, and archive effects on learner history.     | Product owner and backend contract reviewer |
+| SRS and analytics    | Exact four state names, rating-to-interval mapping, lapse behavior, and statistics denominators.                        | Product owner and backend contract reviewer |
+| HSK 1-3 import       | Licensed source, attribution requirements, and approved audio source.                                                   | Product owner/legal owner                   |
 
 These decisions do not block the current foundation because it returns only
 published content and does not create quiz, learner-state, or admin records.
@@ -252,14 +255,14 @@ published content and does not create quiz, learner-state, or admin records.
 
 ## Affected Documentation Domains
 
-| Domain | Canonical Paths | Expected Action |
-| --- | --- | --- |
-| Requirements and scope | `specs/001-chinese-learning-mvp/spec.md` | Update |
-| UX and accessibility | `specs/001-chinese-learning-mvp/plan.md` | Update |
-| Architecture, data, API | `specs/001-chinese-learning-mvp/data-model.md`, `specs/001-chinese-learning-mvp/contracts/api-v1.md` | Update |
-| State, cache, validation | `specs/001-chinese-learning-mvp/data-model.md`, `specs/001-chinese-learning-mvp/contracts/api-v1.md` | Update |
-| Security and privacy | `specs/001-chinese-learning-mvp/contracts/api-v1.md`, `../backend/README.md` | Update |
-| Testing and traceability | `specs/001-chinese-learning-mvp/tasks.md`, `../frontend/README.md`, `../backend/README.md` | Update |
+| Domain                   | Canonical Paths                                                                                      | Expected Action |
+| ------------------------ | ---------------------------------------------------------------------------------------------------- | --------------- |
+| Requirements and scope   | `specs/001-chinese-learning-mvp/spec.md`                                                             | Update          |
+| UX and accessibility     | `specs/001-chinese-learning-mvp/plan.md`                                                             | Update          |
+| Architecture, data, API  | `specs/001-chinese-learning-mvp/data-model.md`, `specs/001-chinese-learning-mvp/contracts/api-v1.md` | Update          |
+| State, cache, validation | `specs/001-chinese-learning-mvp/data-model.md`, `specs/001-chinese-learning-mvp/contracts/api-v1.md` | Update          |
+| Security and privacy     | `specs/001-chinese-learning-mvp/contracts/api-v1.md`, `../backend/README.md`                         | Update          |
+| Testing and traceability | `specs/001-chinese-learning-mvp/tasks.md`, `../frontend/README.md`, `../backend/README.md`           | Update          |
 
 ## Docs Impact
 
@@ -276,12 +279,12 @@ published content and does not create quiz, learner-state, or admin records.
 
 ## Requirement Traceability
 
-| Requirement | User Story | Acceptance Scenario | Verification |
-| --- | --- | --- | --- |
-| FR-001 to FR-002 | Story 1 | 1 to 3 | Backend auth unit/integration tests; frontend auth E2E |
-| FR-003 to FR-007 | Story 2 | 1 to 3 | Content API tests; lesson and writing E2E |
-| FR-008 to FR-012 | Story 3 | 1 to 3 | Quiz/progress tests; dashboard E2E |
-| FR-013 to FR-014 | Story 4 | 1 to 2 | Admin authorization/integration tests; seeded E2E |
-| FR-015 to FR-017 | Story 5 | Due-review scenario | SRS clock tests; stats E2E |
-| FR-018 | Story 6 | Feature-gate scenario | Focused component/E2E tests |
-| NFR-001 to NFR-008 | Stories 1 to 5 | All | Repository verification and QA checklist |
+| Requirement        | User Story     | Acceptance Scenario   | Verification                                           |
+| ------------------ | -------------- | --------------------- | ------------------------------------------------------ |
+| FR-001 to FR-002   | Story 1        | 1 to 3                | Backend auth unit/integration tests; frontend auth E2E |
+| FR-003 to FR-007   | Story 2        | 1 to 3                | Content API tests; lesson and writing E2E              |
+| FR-008 to FR-012   | Story 3        | 1 to 3                | Quiz/progress tests; dashboard E2E                     |
+| FR-013 to FR-014   | Story 4        | 1 to 2                | Admin authorization/integration tests; seeded E2E      |
+| FR-015 to FR-017   | Story 5        | Due-review scenario   | SRS clock tests; stats E2E                             |
+| FR-018             | Story 6        | Feature-gate scenario | Focused component/E2E tests                            |
+| NFR-001 to NFR-008 | Stories 1 to 5 | All                   | Repository verification and QA checklist               |

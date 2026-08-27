@@ -17,9 +17,9 @@ reviewed migration before publishing a runtime contract.
 
 ## Identity And Authorization
 
-| Entity | Key fields | Invariants |
-| --- | --- | --- |
-| `users` | `id`, normalized `email`, `password_hash`, `role`, `created_at` | Email unique case-insensitively; role is `learner` or `admin`; never return password hash. |
+| Entity             | Key fields                                                              | Invariants                                                                                       |
+| ------------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `users`            | `id`, normalized `email`, `password_hash`, `role`, `created_at`         | Email unique case-insensitively; role is `learner` or `admin`; never return password hash.       |
 | `refresh_sessions` | `id`, `user_id`, `token_hash`, `expires_at`, `revoked_at`, `created_at` | Token hash only; one row represents one issued refresh token; rotation revokes the previous row. |
 
 Refresh tokens are opaque, high-entropy random values rather than JWTs. The
@@ -29,34 +29,50 @@ the replacement row; a reuse attempt revokes all active sessions for that user.
 
 ## Curriculum Content
 
-| Entity | Key fields | Relations and invariants |
-| --- | --- | --- |
-| `levels` | `id`, `slug`, `title`, `description`, `sort_order`, `status` | Slug unique; status is draft, published, or archived. |
-| `units` | `id`, `level_id`, `slug`, `title`, `description`, `sort_order`, `status` | `slug` is unique among non-archived records because the public route addresses a Unit directly; `(level_id, sort_order)` is unique among non-archived records. |
-| `lessons` | `id`, `unit_id`, `slug`, `title`, `summary`, `sort_order`, `status`, `writing_character` | `slug` is unique among non-archived records because the public route addresses a Lesson directly; `(unit_id, sort_order)` is unique among non-archived records. |
-| `vocabulary` | `id`, `hanzi`, `pinyin`, `meaning_vi`, `audio_url`, `status` | `audio_url` nullable HTTPS URL; content changes preserve historical attempt text through snapshots. |
-| `lesson_vocabulary` | `lesson_id`, `vocabulary_id`, `sort_order` | Unique `(lesson_id, vocabulary_id)` and `(lesson_id, sort_order)`. |
-| `example_sentences` | `id`, `vocabulary_id`, `hanzi`, `pinyin`, `meaning_vi`, `audio_url`, `sort_order` | Unique `(vocabulary_id, sort_order)`; audio optional. |
-| `grammar_points` | `id`, `lesson_id`, `title`, `explanation_vi`, `examples_json`, `sort_order` | Unique `(lesson_id, sort_order)`; examples are structured display data, not executable HTML. |
+| Entity              | Key fields                                                                               | Relations and invariants                                                                                                                                        |
+| ------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `levels`            | `id`, `slug`, `title`, `description`, `sort_order`, `status`                             | Slug unique; status is draft, published, or archived.                                                                                                           |
+| `units`             | `id`, `level_id`, `slug`, `title`, `description`, `sort_order`, `status`                 | `slug` is unique among non-archived records because the public route addresses a Unit directly; `(level_id, sort_order)` is unique among non-archived records.  |
+| `lessons`           | `id`, `unit_id`, `slug`, `title`, `summary`, `sort_order`, `status`, `writing_character` | `slug` is unique among non-archived records because the public route addresses a Lesson directly; `(unit_id, sort_order)` is unique among non-archived records. |
+| `vocabulary`        | `id`, `hanzi`, `pinyin`, `meaning_vi`, `audio_url`, `status`                             | `audio_url` nullable HTTPS URL; content changes preserve historical attempt text through snapshots.                                                             |
+| `lesson_vocabulary` | `lesson_id`, `vocabulary_id`, `sort_order`                                               | Unique `(lesson_id, vocabulary_id)` and `(lesson_id, sort_order)`.                                                                                              |
+| `example_sentences` | `id`, `vocabulary_id`, `hanzi`, `pinyin`, `meaning_vi`, `audio_url`, `sort_order`        | Unique `(vocabulary_id, sort_order)`; audio optional.                                                                                                           |
+| `grammar_points`    | `id`, `lesson_id`, `title`, `explanation_vi`, `examples_json`, `sort_order`              | Unique `(lesson_id, sort_order)`; examples are structured display data, not executable HTML.                                                                    |
 
 ## Assessment Content
 
-| Entity | Key fields | Relations and invariants |
-| --- | --- | --- |
-| `quizzes` | `id`, `lesson_id` or `unit_id`, `title`, `kind`, `passing_score`, `status` | Exactly one target: lesson or unit; kind is lesson or unit; 0 to 100 score threshold. |
+| Entity           | Key fields                                                                     | Relations and invariants                                                                     |
+| ---------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| `quizzes`        | `id`, `lesson_id` or `unit_id`, `title`, `kind`, `passing_score`, `status`     | Exactly one target: lesson or unit; kind is lesson or unit; 0 to 100 score threshold.        |
 | `quiz_questions` | `id`, `quiz_id`, `type`, `prompt`, `audio_url`, `correct_answer`, `sort_order` | Type is one of the four MVP modes; unique order per quiz; required media for listening type. |
-| `quiz_options` | `id`, `question_id`, `label`, `sort_order` | Multiple choice needs exactly four distinct options and one server-held correct answer. |
+| `quiz_options`   | `id`, `question_id`, `label`, `sort_order`                                     | Multiple choice needs exactly four distinct options and one server-held correct answer.      |
+
+## HSK Data Foundation
+
+The HSK source snapshot is deliberately separate from the administrator-owned
+curriculum tables above. It does not publish a Level, Unit, Lesson, or learner
+API route by itself.
+
+| Entity                   | Key fields                                                                                                                            | Relations and invariants                                                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `hsk_vocabulary`         | `id`, `hsk_band`, `source_order`, `simplified`, `traditional`, `pinyin`, `frequency`, `sino_viet`, `import_status`, `source_revision` | Band is 1 through 7, where 7 displays as HSK 7–9. Unique `(hsk_band, simplified)` and `(hsk_band, source_order)` preserve source provenance and order. |
+| `hsk_vocabulary_senses`  | `id`, `hsk_vocabulary_id`, `source_order`, `meaning_vi`                                                                               | Ordered CVDICT-derived senses. Unique `(hsk_vocabulary_id, source_order)`; deleted with the parent.                                                    |
+| `hsk_character_readings` | `hanzi`, `sino_viet`, `source`, `source_revision`                                                                                     | One source-attributed Hán–Việt reading per imported character. Curated readings take priority over the Unihan fallback.                                |
+
+The importer uses a versioned local JSON snapshot and upserts in bounded
+transactions. Missing meanings or incomplete character readings remain null or
+empty and use `needs_review`; it must not generate a synthetic replacement.
 
 ## Learner State And Events
 
-| Entity | Key fields | Relations and invariants |
-| --- | --- | --- |
-| `lesson_progress` | `user_id`, `lesson_id`, `sections_seen`, `status`, `first_completed_at`, `last_activity_at` | Unique user/lesson; completion is idempotent; state belongs only to its user. |
-| `quiz_attempts` | `id`, `user_id`, `quiz_id`, `score`, `question_count`, `submitted_at` | Immutable after submit; server calculates score. |
-| `quiz_answers` | `id`, `attempt_id`, `question_id`, `selected_option_id`, `is_correct`, `answered_at` | One answer per question/attempt; answer keys never come from client. |
-| `vocabulary_reviews` | `id`, `user_id`, `vocabulary_id`, `rating`, `reviewed_at`, `next_review_at`, `srs_stage` | Rating is again, hard, good, or easy; scheduling computed server-side. |
-| `user_vocabulary_tags` | `user_id`, `vocabulary_id`, `tag` | Tag is favorite or difficult; unique user/vocabulary/tag. |
-| `learning_activities` | `id`, `user_id`, `activity_date`, `type`, `source_id`, `created_at` | At most one daily streak-qualifying row per user/day/type/source as defined by backend. |
+| Entity                 | Key fields                                                                                  | Relations and invariants                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `lesson_progress`      | `user_id`, `lesson_id`, `sections_seen`, `status`, `first_completed_at`, `last_activity_at` | Unique user/lesson; completion is idempotent; state belongs only to its user.           |
+| `quiz_attempts`        | `id`, `user_id`, `quiz_id`, `score`, `question_count`, `submitted_at`                       | Immutable after submit; server calculates score.                                        |
+| `quiz_answers`         | `id`, `attempt_id`, `question_id`, `selected_option_id`, `is_correct`, `answered_at`        | One answer per question/attempt; answer keys never come from client.                    |
+| `vocabulary_reviews`   | `id`, `user_id`, `vocabulary_id`, `rating`, `reviewed_at`, `next_review_at`, `srs_stage`    | Rating is again, hard, good, or easy; scheduling computed server-side.                  |
+| `user_vocabulary_tags` | `user_id`, `vocabulary_id`, `tag`                                                           | Tag is favorite or difficult; unique user/vocabulary/tag.                               |
+| `learning_activities`  | `id`, `user_id`, `activity_date`, `type`, `source_id`, `created_at`                         | At most one daily streak-qualifying row per user/day/type/source as defined by backend. |
 
 ## Derived Business Rules
 
@@ -80,3 +96,6 @@ the replacement row; a reuse attempt revokes all active sessions for that user.
   release. Archive status avoids orphaning historical attempts.
 - Do not persist writing-canvas strokes in the MVP. If this changes later, it
   requires a privacy review, explicit retention rule, and new migration.
+- The HSK snapshot requires attribution and ShareAlike records in the backend
+  data directory and a visible frontend footer; an export feature must carry
+  equivalent metadata when it is introduced.
