@@ -50,8 +50,9 @@ the replacement row; a reuse attempt revokes all active sessions for that user.
 ## HSK Data Foundation
 
 The HSK source snapshot is deliberately separate from the administrator-owned
-curriculum tables above. It does not publish a Level, Unit, Lesson, or learner
-API route by itself.
+curriculum tables above. It does not publish a Level, Unit, or Lesson; it is
+exposed only through the separate public, read-only HSK vocabulary queries
+defined in `contracts/api-v1.md`.
 
 | Entity                   | Key fields                                                                                                                            | Relations and invariants                                                                                                                               |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |

@@ -74,6 +74,11 @@
       Must-have workers are approved. Trace: SC-001 to SC-004 and NFR-001 to NFR-008.
 - [ ] **T013** `[TODO]` Run `DOCS_IMPACT_FINAL_CHECK`, write `review.md` and
       `converge.md`, and reconcile worker commits before declaring the MVP complete.
+- [x] **T014** `[DONE]` Complete run `007-hsk-learner-writing`: expose the
+      imported HSK tables through public read-only query endpoints, add HSK
+      browse/detail learner routes, and provide offline three-mode writing with
+      local stroke assets. Trace: HSK learner specification FR-001 to FR-006 and
+      NFR-001 to NFR-004.
 
 ## Persona Lens Notes
 

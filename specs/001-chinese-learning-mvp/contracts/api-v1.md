@@ -37,13 +37,13 @@ foundation responses.
 
 ## Authentication
 
-| Method and path | Request | Success | Errors |
-| --- | --- | --- | --- |
-| `POST /auth/register` | `{ "email", "password" }` | `201` `{ "accessToken", "user" }` plus refresh cookie | `VALIDATION_ERROR`, `EMAIL_ALREADY_REGISTERED` |
-| `POST /auth/login` | `{ "email", "password" }` | `200` `{ "accessToken", "user" }` plus rotated refresh cookie | `VALIDATION_ERROR`, `INVALID_CREDENTIALS` |
-| `POST /auth/refresh` | No body; refresh cookie | `200` `{ "accessToken", "user" }` plus rotated refresh cookie | `INVALID_REFRESH_TOKEN` |
-| `POST /auth/logout` | No body; cookie optional | `204`, refresh cookie cleared | Never reveals session existence |
-| `GET /auth/me` | Access token | `200` `{ "id", "email", "role", "createdAt" }` | `INVALID_ACCESS_TOKEN` |
+| Method and path       | Request                   | Success                                                       | Errors                                         |
+| --------------------- | ------------------------- | ------------------------------------------------------------- | ---------------------------------------------- |
+| `POST /auth/register` | `{ "email", "password" }` | `201` `{ "accessToken", "user" }` plus refresh cookie         | `VALIDATION_ERROR`, `EMAIL_ALREADY_REGISTERED` |
+| `POST /auth/login`    | `{ "email", "password" }` | `200` `{ "accessToken", "user" }` plus rotated refresh cookie | `VALIDATION_ERROR`, `INVALID_CREDENTIALS`      |
+| `POST /auth/refresh`  | No body; refresh cookie   | `200` `{ "accessToken", "user" }` plus rotated refresh cookie | `INVALID_REFRESH_TOKEN`                        |
+| `POST /auth/logout`   | No body; cookie optional  | `204`, refresh cookie cleared                                 | Never reveals session existence                |
+| `GET /auth/me`        | Access token              | `200` `{ "id", "email", "role", "createdAt" }`                | `INVALID_ACCESS_TOKEN`                         |
 
 Password validation is 12 to 128 characters. Email is trimmed and lowercased
 server-side before uniqueness checks. The response user object never contains a
@@ -56,13 +56,13 @@ backend.
 
 ## Public Learner Content
 
-| Method and path | Success shape | Rules |
-| --- | --- | --- |
-| `GET /levels` | `{ "items": [LevelSummary] }` | Published levels only. |
-| `GET /levels/:levelSlug` | `LevelDetail` with published Units | Stable `sortOrder`. |
-| `GET /units/:unitSlug` | `UnitDetail` with published Lessons | Foundation returns content only; progress is added later. |
-| `GET /lessons/:lessonSlug` | `LessonDetail` | Vocabulary, examples, grammar, and writing character only. |
-| `POST /lessons/:lessonId/progress` | `LessonProgress` | Body only declares viewed section IDs; backend derives completion. |
+| Method and path                    | Success shape                       | Rules                                                              |
+| ---------------------------------- | ----------------------------------- | ------------------------------------------------------------------ |
+| `GET /levels`                      | `{ "items": [LevelSummary] }`       | Published levels only.                                             |
+| `GET /levels/:levelSlug`           | `LevelDetail` with published Units  | Stable `sortOrder`.                                                |
+| `GET /units/:unitSlug`             | `UnitDetail` with published Lessons | Foundation returns content only; progress is added later.          |
+| `GET /lessons/:lessonSlug`         | `LessonDetail`                      | Vocabulary, examples, grammar, and writing character only.         |
+| `POST /lessons/:lessonId/progress` | `LessonProgress`                    | Body only declares viewed section IDs; backend derives completion. |
 
 `LessonDetail` contains a display-safe content projection. The later learning
 contract may add quiz prompt and option data, but it never exposes
@@ -101,16 +101,37 @@ answer data.
 Level, Unit, and Lesson slugs are globally unique among non-archived records,
 which makes their direct public URLs unambiguous.
 
+## Public HSK Vocabulary
+
+The HSK source snapshot is separate from administrator-owned curriculum
+content. Its three public read-only endpoints neither require a learner session
+nor alter curriculum, progress, quiz, or review responses.
+
+| Method and path           | Success shape                   | Rules                                                                                                                            |
+| ------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /hsk/bands`          | `{ "items": [HskBandSummary] }` | Returns bands 1 through 7 in order; 7 displays as HSK 7–9.                                                                       |
+| `GET /hsk/vocabulary`     | `HskVocabularyPage`             | Optional `band` is 1 through 7, `query` is at most 100 characters, `cursor` is opaque, and `limit` is 1 through 50 (default 24). |
+| `GET /hsk/vocabulary/:id` | `HskVocabularyDetail`           | `id` is a UUID; senses retain the imported source order.                                                                         |
+
+`HskBandSummary` contains `band`, `displayBand`, and `count`.
+`HskVocabularyPage` contains `items` and nullable `nextCursor`. A summary item
+contains `id`, `hskBand`, `sourceOrder`, `simplified`, `pinyin`, nullable
+`sinoViet`, nullable `primaryMeaning`, and `importStatus` (`ready` or
+`needs_review`). Detail adds nullable `traditional` and `frequency`, plus the
+ordered string-array `senses`. Searches match imported local fields only; the
+backend never requests a dictionary, translation service, or source repository
+at runtime.
+
 ## Quiz, Review, And Dashboard
 
-| Method and path | Request | Success | Rules |
-| --- | --- | --- | --- |
-| `POST /quizzes/:quizId/attempts` | `{ "answers": [{ "questionId", "selectedOptionId" }] }` | Score plus per-question correctness and next action | Server validates ownership, published status, option membership, and scores. |
-| `GET /reviews/due` | Optional bounded cursor | Due review cards | Never returns another learner's schedule. |
-| `POST /reviews` | `{ "vocabularyId", "rating" }` | Updated SRS state and next review time | Server computes schedule. |
-| `PUT /vocabulary/:vocabularyId/tags/:tag` | No body | `204` | Tag is `favorite` or `difficult`. |
-| `DELETE /vocabulary/:vocabularyId/tags/:tag` | No body | `204` | Idempotent. |
-| `GET /dashboard` | `DashboardSummary` | `learnedWords`, `completedLessons`, `currentStreak`, `continueLesson`, `dueReviewCount`, `accuracy` | Learner only. |
+| Method and path                              | Request                                                 | Success                                                                                             | Rules                                                                        |
+| -------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `POST /quizzes/:quizId/attempts`             | `{ "answers": [{ "questionId", "selectedOptionId" }] }` | Score plus per-question correctness and next action                                                 | Server validates ownership, published status, option membership, and scores. |
+| `GET /reviews/due`                           | Optional bounded cursor                                 | Due review cards                                                                                    | Never returns another learner's schedule.                                    |
+| `POST /reviews`                              | `{ "vocabularyId", "rating" }`                          | Updated SRS state and next review time                                                              | Server computes schedule.                                                    |
+| `PUT /vocabulary/:vocabularyId/tags/:tag`    | No body                                                 | `204`                                                                                               | Tag is `favorite` or `difficult`.                                            |
+| `DELETE /vocabulary/:vocabularyId/tags/:tag` | No body                                                 | `204`                                                                                               | Idempotent.                                                                  |
+| `GET /dashboard`                             | `DashboardSummary`                                      | `learnedWords`, `completedLessons`, `currentStreak`, `continueLesson`, `dueReviewCount`, `accuracy` | Learner only.                                                                |
 
 ## Admin Content Management
 
