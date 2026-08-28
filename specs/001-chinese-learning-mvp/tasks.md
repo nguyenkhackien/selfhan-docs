@@ -41,23 +41,23 @@
       responsive behavior, and accessibility. Evidence: frontend `npm run verify`
       passed with coverage and Playwright/axe checks. Trace: FR-001, FR-003 to
       FR-007, NFR-005 to NFR-007.
-- [ ] **T006** `[TODO]` Dispatch run `003-quiz-progress-api` to `backend` after
+- [x] **T006** `[DONE]` Implement quiz-progress API directly in `backend`.
       `auth-content-v1` approval. Deliver quiz scoring, lesson progress, dashboard,
       flashcard review API, and `learning-state-v1`. Trace: FR-008 to FR-012.
-- [ ] **T007** `[TODO]` Review run 003 and publish `learning-state-v1`. Trace:
+- [x] **T007** `[DONE]` Review learner-state contract and implementation. Trace:
       FR-008 to FR-012, NFR-002 to NFR-004.
-- [ ] **T008** `[TODO]` Dispatch run `004-learner-practice` to `frontend` after
+- [x] **T008** `[DONE]` Implement learner practice UI directly in `frontend`.
       `learning-state-v1` approval. Deliver quiz, flashcard, dashboard, and
       cross-session learner E2E. Trace: FR-008 to FR-012, NFR-005 to NFR-007.
 
 ## Phase 3: Core Content Operations
 
-- [ ] **T009** `[TODO]` Dispatch, review, and publish runs 005 and 006 for
+- [x] **T009** `[DONE]` Implement and review backend admin CRUD plus frontend UI.
       backend admin CRUD then frontend admin UI. Trace: FR-013, NFR-002 to NFR-007.
 
 ## Phase 4: Should-Have Learning Features
 
-- [ ] **T010** `[TODO]` Dispatch, review, and publish runs 007 and 008 for SRS,
+- [x] **T010** `[DONE]` Implement and review SRS, tags, Unit quiz, statistics,
       vocabulary tags, Unit quiz, statistics, and their learner UI. Trace: FR-015
       to FR-017.
 
@@ -72,7 +72,7 @@
       Trace: FR-014 and NFR-008.
 - [ ] **T012** `[TODO]` Dispatch and review run 009 release hardening after all
       Must-have workers are approved. Trace: SC-001 to SC-004 and NFR-001 to NFR-008.
-- [ ] **T013** `[TODO]` Run `DOCS_IMPACT_FINAL_CHECK`, write `review.md` and
+- [x] **T013** `[DONE]` Run `DOCS_IMPACT_FINAL_CHECK`, write `review.md` and
       `converge.md`, and reconcile worker commits before declaring the MVP complete.
 - [x] **T014** `[DONE]` Complete run `007-hsk-learner-writing`: expose the
       imported HSK tables through public read-only query endpoints, add HSK

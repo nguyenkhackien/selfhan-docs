@@ -126,12 +126,18 @@ at runtime.
 
 | Method and path                              | Request                                                 | Success                                                                                             | Rules                                                                        |
 | -------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `GET /lessons/:lessonId/quizzes`             | None                                                    | Published lesson quiz metadata                                                                      | Never returns an answer key.                                                 |
+| `GET /units/:unitId/quizzes`                 | None                                                    | Published Unit quiz metadata                                                                        | Never returns an answer key.                                                 |
+| `GET /quizzes/:quizId`                       | None                                                    | Prompt/options/passing score                                                                        | Never returns `isCorrect`.                                                   |
 | `POST /quizzes/:quizId/attempts`             | `{ "answers": [{ "questionId", "selectedOptionId" }] }` | Score plus per-question correctness and next action                                                 | Server validates ownership, published status, option membership, and scores. |
-| `GET /reviews/due`                           | Optional bounded cursor                                 | Due review cards                                                                                    | Never returns another learner's schedule.                                    |
+| `GET /lessons/:lessonId/progress`            | None                                                    | Current sections and completion state                                                               | Learner-only state.                                                          |
+| `POST /lessons/:lessonId/progress`           | `{ "sectionsSeen": [string] }`                          | Updated progress and derived completion                                                             | Completion needs all sections plus a passing lesson quiz.                    |
+| `GET /reviews/due`                           | Optional bounded cursor and `limit`                     | `{ "items", "nextCursor" }`                                                                         | Never returns another learner's schedule.                                    |
 | `POST /reviews`                              | `{ "vocabularyId", "rating" }`                          | Updated SRS state and next review time                                                              | Server computes schedule.                                                    |
 | `PUT /vocabulary/:vocabularyId/tags/:tag`    | No body                                                 | `204`                                                                                               | Tag is `favorite` or `difficult`.                                            |
 | `DELETE /vocabulary/:vocabularyId/tags/:tag` | No body                                                 | `204`                                                                                               | Idempotent.                                                                  |
 | `GET /dashboard`                             | `DashboardSummary`                                      | `learnedWords`, `completedLessons`, `currentStreak`, `continueLesson`, `dueReviewCount`, `accuracy` | Learner only.                                                                |
+| `GET /statistics`                            | None                                                    | Attempt count, question count, and accuracy                                                         | Learner only.                                                                |
 
 ## Admin Content Management
 
@@ -139,7 +145,10 @@ All `/admin/*` routes require the `admin` role. They use plural resource nouns
 and standard `GET`, `POST`, `PATCH`, and archive transitions. Every create or
 update explicitly accepts only mutable fields. Admin endpoints must support
 Level, Unit, Lesson, Vocabulary, GrammarPoint, Quiz, QuizQuestion, and
-QuizOption management, including content ordering and status transition.
+QuizOption management, including content ordering and status transition. Quizzes
+are created as drafts and cannot be published until every question has at least
+two options and exactly one correct answer. Status-bearing content has a
+`POST /admin/:resource/:id/archive` transition.
 
 ## Contract Ownership And Versioning
 
